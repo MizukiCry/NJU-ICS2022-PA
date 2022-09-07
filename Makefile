@@ -1,5 +1,5 @@
-STUID = 211220000
-STUNAME = 张三
+STUID = THU_STUID
+STUNAME = MizukiCry
 
 # DO NOT modify the following code!!!
 
