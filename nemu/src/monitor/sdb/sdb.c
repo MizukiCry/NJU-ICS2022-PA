@@ -49,6 +49,10 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+
+  //Fix Error 1
+  nemu_state.state = NEMU_QUIT;
+
   return -1;
 }
 
