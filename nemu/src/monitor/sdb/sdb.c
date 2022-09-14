@@ -76,6 +76,25 @@ static int cmd_si(char *args) {
   return 0;
 }
 
+static int cmd_info(char *args) {
+  if (args == NULL) {
+    printf(ANSI_FMT("Expect SUBCMD.\n", ANSI_FG_RED));
+  } else {
+    char *first_arg = strtok(args, " ");
+    char *other_args = strtok(NULL, " ");
+    if (other_args != NULL) {
+      printf(ANSI_FMT("Expect exactly one SUBCMD.\n", ANSI_FG_RED));
+    } else if(strcmp(first_arg, "r") == 0) {
+      isa_reg_display();
+    } else if(strcmp(first_arg, "w") == 0) {
+      printf(ANSI_FMT("To be implemented.\n", ANSI_FG_RED));
+    } else {
+      printf(ANSI_FMT("Unexpected SUBCMD (expect \"r\" or \"w\").\n", ANSI_FG_RED));
+    }
+  }
+  return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -86,6 +105,7 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   { "si", "(si [N]) Execute N(1 by default) instructions in single step and then pause it", cmd_si},
+  { "info", "Print the status of the program", cmd_info },
   /* TODO: Add more commands */
 
 };

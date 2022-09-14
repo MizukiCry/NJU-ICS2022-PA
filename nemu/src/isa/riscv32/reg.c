@@ -24,6 +24,9 @@ const char *regs[] = {
 };
 
 void isa_reg_display() {
+  for (int i = 0; i < 32; ++i) {
+    printf(ANSI_FMT("%-4s=%u\n", ANSI_FG_GREEN), regs[i], cpu.gpr[i]);
+  }
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
