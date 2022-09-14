@@ -169,7 +169,7 @@ static int cmd_x(char *args) {
   char *other_orgs = strtok(NULL, " ");
 
   bool expr_state = false;
-  paddr_t n = 0, addr = expr(second_arg, expr_state);
+  paddr_t n = 0, addr = expr(second_arg, &expr_state);
   NTYPE n_type = strnum(first_arg, &n);
 
   if (first_arg == NULL || second_arg == NULL || other_orgs != NULL) {
