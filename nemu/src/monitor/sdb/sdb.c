@@ -96,7 +96,18 @@ static int cmd_info(char *args) {
 }
 
 static int cmd_x(char *args) {
-  
+  char *first_arg = strtok(args, " ");
+  char *second_arg = strtok(NULL, " ");
+  char *other_orgs = strtok(NULL, " ");
+
+  paddr_t N = 0;
+
+
+  if (first_arg == NULL || second_arg == NULL || other_orgs != NULL) {
+    printf(ANSI_FMT("Expect an integer N and an expression EXPR\n", ANSI_FG_RED));
+  } else if (true) {
+    return N;
+  }
   return 0;
 }
 
@@ -110,8 +121,8 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   { "si", "(si [N]) Execute N(1 by default) instructions in single step and then pause it", cmd_si},
-  { "info", "Print the status of the program", cmd_info },
-  { "x", "", cmd_x },
+  { "info", "(info r/w) Print the status of the program", cmd_info },
+  { "x", "(x N EXPR) Print N bytes since address EXPR as an expression", cmd_x },
   /* TODO: Add more commands */
 
 };
