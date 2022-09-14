@@ -58,6 +58,24 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
+static int cmd_si(char *args) {
+  if (args == NULL) {
+    cpu_exec(1);
+  } else {
+    char *first_arg = strtok(args, " ");
+    char *other_args = strtok(NULL, " ");
+    uint64_t n = 0;
+    if (sscanf(first_arg, "%lu", &n) == 0 || other_args != NULL) {
+      printf(ANSI_FMT("Expect exactly one integer.", ANSI_FG_RED));
+    } else if (*first_arg == '-') {
+      printf(ANSI_FMT("Expect a positive integer.", ANSI_FG_RED));
+    } else {
+      cpu_exec(n);
+    }
+  }
+  return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -67,6 +85,7 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
 
+  { "si", "(si [N]) Execute N(1 by default) instructions in single step and then pause it", cmd_si},
   /* TODO: Add more commands */
 
 };
