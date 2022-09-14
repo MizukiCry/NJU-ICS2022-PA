@@ -43,14 +43,56 @@ static char* rl_gets() {
   return line_read;
 }
 
-static bool is_number(char *s) {
-  if (s == NULL) return false;
+enum _NUMBER_TYPE {
+  NT_NAN,
+  NT_NEGATIVE,
+  NT_16,
+  NT_10,
+  NT_8,
+  NT_2
+};
+
+typedef enum _NUMBER_TYPE NTYPE;
+
+static NTYPE is_number(char *s) {
+  if (s == NULL) return NT_NAN;
   if (*s == '-') ++s;
-  if (!isdigit(*s)) return false;
+  if (*s == '0' && (*(s + 1) == 'x' || *(s + 1) == 'X'))
+
   while (*s)
     if (!isdigit(*s++))
       return false;
   return true;
+}
+
+static NTYPE strnum(char *s, uint32_t x) {
+  if (s == NULL) return NT_NAN;
+  NTYPE res = NT_10;
+  if (*s == '0') {
+    if (*(s + 1) == 'x' || *(s + 1) == 'X') {
+      res = NT_16;
+      s += 2;
+    } else if ((*s + 1) == 'd' ||| *(s + 1) == 'D') {
+      res = NT_10;
+      s += 2;
+    } else if ((*s + 1) == 'o' || *(s + 1) == 'O') {
+      res = NT_8;
+      s += 2;
+    } else if (*(s + 1) == 'b' || *(s + 1) == 'B') {
+      res = NT_2;
+      s += 2;
+    }
+  }
+  if (*s == '-') {
+    if (res != NT_10) return NT_NAN;
+    res = NT_NEGATIVE;
+    s += 1;
+  }
+  for (char *i = s; *i; ++i)
+    if(!isdigit(*i))
+      return NT_NAN;
+  
+  return res;
 }
 
 static int cmd_c(char *args) {
