@@ -91,7 +91,7 @@ static NTYPE strnum(char *s, uint32_t *x) {
     sscanf(s, "%u", x);
     break;
   case NT_8:
-    sscanf(s, "%o", &x);
+    sscanf(s, "%o", x);
     break;
   /*case NT_2:
     sscanf(s, "%b", &x);
