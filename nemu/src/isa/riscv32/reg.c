@@ -25,7 +25,7 @@ const char *regs[] = {
 
 void isa_reg_display() {
   for (int i = 0; i < 32; ++i) {
-    printf(ANSI_FMT("%-4s=%u\n", ANSI_FG_GREEN), regs[i], cpu.gpr[i]);
+    printf(ANSI_FMT("[%-3s] = 0x%8x = %u\n", ANSI_FG_GREEN), regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
 }
 

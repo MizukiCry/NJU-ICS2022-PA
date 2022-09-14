@@ -95,6 +95,11 @@ static int cmd_info(char *args) {
   return 0;
 }
 
+static int cmd_x(char *args) {
+  
+  return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -106,6 +111,7 @@ static struct {
 
   { "si", "(si [N]) Execute N(1 by default) instructions in single step and then pause it", cmd_si},
   { "info", "Print the status of the program", cmd_info },
+  { "x", "", cmd_x },
   /* TODO: Add more commands */
 
 };
