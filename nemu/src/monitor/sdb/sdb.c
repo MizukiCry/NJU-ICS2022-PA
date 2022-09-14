@@ -43,45 +43,31 @@ static char* rl_gets() {
   return line_read;
 }
 
-enum _NUMBER_TYPE {
+typedef enum _NUMBER_TYPE {
   NT_NAN,
   NT_NEGATIVE,
   NT_16,
   NT_10,
-  NT_8,
-  NT_2
-};
+  NT_8
+} NTYPE;
 
-typedef enum _NUMBER_TYPE NTYPE;
-
-static NTYPE is_number(char *s) {
-  if (s == NULL) return NT_NAN;
-  if (*s == '-') ++s;
-  if (*s == '0' && (*(s + 1) == 'x' || *(s + 1) == 'X'))
-
-  while (*s)
-    if (!isdigit(*s++))
-      return false;
-  return true;
-}
-
-static NTYPE strnum(char *s, uint32_t x) {
+static NTYPE strnum(char *s, uint32_t *x) {
   if (s == NULL) return NT_NAN;
   NTYPE res = NT_10;
   if (*s == '0') {
     if (*(s + 1) == 'x' || *(s + 1) == 'X') {
       res = NT_16;
       s += 2;
-    } else if ((*s + 1) == 'd' ||| *(s + 1) == 'D') {
+    } else if ((*s + 1) == 'd' || *(s + 1) == 'D') {
       res = NT_10;
       s += 2;
     } else if ((*s + 1) == 'o' || *(s + 1) == 'O') {
       res = NT_8;
       s += 2;
-    } else if (*(s + 1) == 'b' || *(s + 1) == 'B') {
+    }/* else if (*(s + 1) == 'b' || *(s + 1) == 'B') {
       res = NT_2;
       s += 2;
-    }
+    }*/
   }
   if (*s == '-') {
     if (res != NT_10) return NT_NAN;
@@ -89,9 +75,30 @@ static NTYPE strnum(char *s, uint32_t x) {
     s += 1;
   }
   for (char *i = s; *i; ++i)
-    if(!isdigit(*i))
+    if ((res == NT_10 || res == NT_NEGATIVE) && !isdigit(*i))
       return NT_NAN;
-  
+    else if(res == NT_16 && (!isdigit(*i) && !('a' <= *i && *i <= 'f') && !('A' <= *i && *i <= 'F')))
+      return NT_NAN;
+    else if(res == NT_8 && !('0' <= *i && *i <= '7'))
+      return NT_NAN;
+  switch (res)
+  {
+  case NT_16:
+    sscanf(s, "%x", x);
+    break;
+  case NT_10:
+  case NT_NEGATIVE:
+    sscanf(s, "%u", x);
+    break;
+  case NT_8:
+    sscanf(s, "%o", &x);
+    break;
+  /*case NT_2:
+    sscanf(s, "%b", &x);
+    break;*/
+  default:
+    return NT_NAN;
+  }
   return res;
 }
 
@@ -116,10 +123,11 @@ static int cmd_si(char *args) {
   } else {
     char *first_arg = strtok(args, " ");
     char *other_args = strtok(NULL, " ");
-    uint64_t n = 0;
+    uint32_t n = 0;
+    NTYPE n_type = strnum(first_arg, &n);
     if (other_args != NULL) {
       printf(ANSI_FMT("Expect exactly one integer.\n", ANSI_FG_RED));
-    } else if (*first_arg == '-' || !is_number(first_arg) || (sscanf(first_arg, "%lu", &n), n) == 0) {
+    } else if (n_type == NT_NAN || n_type == NT_NEGATIVE || n == 0) {
       printf(ANSI_FMT("Expect a positive integer.\n", ANSI_FG_RED));
     } else {
       cpu_exec(n);
@@ -148,11 +156,11 @@ static int cmd_info(char *args) {
 }
 
 static paddr_t calc_expr(char* expr) {
-
+  //To be improved
   paddr_t x = 0;
-  sscanf(expr, "%u", &x);
+  //sscanf(expr, "%u", &x);
+  strnum(expr, &x);
   return x;
-
 }
 
 static int cmd_x(char *args) {
@@ -160,17 +168,18 @@ static int cmd_x(char *args) {
   char *second_arg = strtok(NULL, " ");
   char *other_orgs = strtok(NULL, " ");
 
-  paddr_t N = 0, addr = 0;
+  paddr_t n = 0, addr = 0;
+  NTYPE n_type = strnum(first_arg, &n);
 
   if (first_arg == NULL || second_arg == NULL || other_orgs != NULL) {
     printf(ANSI_FMT("Expect an integer N and an expression EXPR.\n", ANSI_FG_RED));
-  } else if (!is_number(first_arg) || *first_arg == '-' || (sscanf(first_arg, "%u", &N), N == 0 || N > 1e5)) {
+  } else if (n_type == NT_NAN || n_type == NT_NEGATIVE || n == 0 || n > 1e5) {
     printf(ANSI_FMT("Expect an positive integer between 0 and 10000.\n", ANSI_FG_GREEN));
-    return N;
+    return n;
   } else if (addr = calc_expr(second_arg), addr == 0) {
     printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
   } else {
-    for (paddr_t i = 0; i < N; ++i) {
+    for (paddr_t i = 0; i < n; ++i) {
       word_t v = paddr_read(addr + i * 4, 4);
       uint8_t *x = (uint8_t *)&v;
       printf("0x%08x : " ANSI_FMT("0x%02x\t0x%02x\t0x%02x\t0x%02x\n", ANSI_FG_GREEN), addr + i * 4, x[0], x[1], x[2], x[3]);
