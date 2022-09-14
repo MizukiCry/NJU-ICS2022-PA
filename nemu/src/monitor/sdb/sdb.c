@@ -155,13 +155,13 @@ static int cmd_info(char *args) {
   return 0;
 }
 
-static paddr_t calc_expr(char* expr) {
+/*static paddr_t calc_expr(char* expr) {
   //To be improved
   paddr_t x = 0;
   //sscanf(expr, "%u", &x);
   strnum(expr, &x);
   return x;
-}
+}*/
 
 static int cmd_x(char *args) {
   char *first_arg = strtok(args, " ");
@@ -170,13 +170,14 @@ static int cmd_x(char *args) {
 
   paddr_t n = 0, addr = 0;
   NTYPE n_type = strnum(first_arg, &n);
+  bool expr_state = false;
 
   if (first_arg == NULL || second_arg == NULL || other_orgs != NULL) {
     printf(ANSI_FMT("Expect an integer N and an expression EXPR.\n", ANSI_FG_RED));
-  } else if (n_type == NT_NAN || n_type == NT_NEGATIVE || n == 0 || n > 1e5) {
-    printf(ANSI_FMT("Expect an positive integer between 0 and 10000.\n", ANSI_FG_GREEN));
+  } else if (n_type == NT_NAN || n_type == NT_NEGATIVE || n == 0 || n > 1e3) {
+    printf(ANSI_FMT("Expect an positive integer between 1 and 1000.\n", ANSI_FG_GREEN));
     return n;
-  } else if (addr = calc_expr(second_arg), addr == 0) {
+  } else if (addr = expr(second_arg, expr_state), !expr_state) {
     printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
   } else {
     for (paddr_t i = 0; i < n; ++i) {
