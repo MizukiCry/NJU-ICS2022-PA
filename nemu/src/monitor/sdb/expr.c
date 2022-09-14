@@ -93,6 +93,11 @@ static bool make_token(char *e) {
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
+    if (nr_token == 32) {
+      printf(ANSI_FMT("Regex too long.\n", ANSI_FG_RED));
+      return false;
+    }
+
     for (i = 0; i < NR_REGEX; i ++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
@@ -111,7 +116,11 @@ static bool make_token(char *e) {
         tokens[nr_token].type = rules[i].token_type;
         switch (rules[i].token_type) {
           TK_DEC_INT:
-
+            if (substr_len > 32) {
+              printf(ANSI_FMT("Regex integer too large.\n", ANSI_FG_RED));
+              return false;
+            }
+            memcpy(tokens[nr_token].str, substr_start, substr_len);
             break;
           default:
         }
