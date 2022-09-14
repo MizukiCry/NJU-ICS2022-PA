@@ -115,7 +115,7 @@ static bool make_token(char *e) {
 
         tokens[nr_token].type = rules[i].token_type;
         switch (rules[i].token_type) {
-          TK_DEC_INT:
+          case TK_DEC_INT:
             if (substr_len > 32) {
               printf(ANSI_FMT("Regex integer too large.\n", ANSI_FG_RED));
               return false;
