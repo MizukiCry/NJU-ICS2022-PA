@@ -130,7 +130,7 @@ static int cmd_x(char *args) {
     for (paddr_t i = 0; i < N; ++i) {
       word_t v = paddr_read(addr + i * 4, 4);
       uint8_t *x = (uint8_t *)&v;
-      printf("0x%08u : " ANSI_FMT("0x%02u\t0x%02u\t0x%02u\t0x%02u\n", ANSI_FG_GREEN), x[0], x[1], x[2], x[3]);
+      printf("0x%08u : " ANSI_FMT("0x%02x\t0x%02x\t0x%02x\t0x%02x\n", ANSI_FG_GREEN), x[0], x[1], x[2], x[3]);
     }
   }
   return 0;
