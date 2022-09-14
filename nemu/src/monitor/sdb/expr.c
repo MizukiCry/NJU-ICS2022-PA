@@ -45,8 +45,8 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},        // spaces
-  {"\\(", TK_L_BRA},          // left bracket
-  {"\\)", TK_R_BRA},          // right bracket
+  {"\\(", TK_L_BRA},        // left bracket
+  {"\\)", TK_R_BRA},        // right bracket
   {"\\*", TK_MUL},          // multiply
   {"/", TK_DIV},            // divide
   {"\\+", TK_PLUS},         // plus
@@ -108,10 +108,14 @@ static bool make_token(char *e) {
          * of tokens, some extra actions should be performed.
          */
 
+        tokens[nr_token].type = rules[i].token_type;
         switch (rules[i].token_type) {
-          default: TODO();
-        }
+          TK_DEC_INT:
 
+            break;
+          default:
+        }
+        ++nr_token;
         break;
       }
     }
