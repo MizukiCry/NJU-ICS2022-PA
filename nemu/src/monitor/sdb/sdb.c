@@ -67,7 +67,7 @@ static int cmd_si(char *args) {
     uint64_t n = 0;
     if (sscanf(first_arg, "%lu", &n) == 0 || other_args != NULL) {
       printf(ANSI_FMT("Expect exactly one integer.", ANSI_FG_RED));
-    } else if (*first_arg == '-') {
+    } else if (*first_arg == '-' || n == 0) {
       printf(ANSI_FMT("Expect a positive integer.", ANSI_FG_RED));
     } else {
       cpu_exec(n);
