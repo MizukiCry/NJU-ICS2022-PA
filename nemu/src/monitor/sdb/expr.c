@@ -45,8 +45,8 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},        // spaces
-  {"(", TK_L_BRA},          // left bracket
-  {")", TK_R_BRA},          // right bracket
+  {"\\(", TK_L_BRA},          // left bracket
+  {"\\)", TK_R_BRA},          // right bracket
   {"\\*", TK_MUL},          // multiply
   {"/", TK_DIV},            // divide
   {"\\+", TK_PLUS},         // plus
