@@ -122,15 +122,15 @@ static int cmd_x(char *args) {
   if (first_arg == NULL || second_arg == NULL || other_orgs != NULL) {
     printf(ANSI_FMT("Expect an integer N and an expression EXPR.\n", ANSI_FG_RED));
   } else if (!is_number(first_arg) || *first_arg == '-' || (sscanf(first_arg, "%u", &N), N == 0 || N > 1e5)) {
-    printf(ANSI_FMT("Expect an positive integer between 0 and 10000.\n"));
+    printf(ANSI_FMT("Expect an positive integer between 0 and 10000.\n", ANSI_FG_GREEN));
     return N;
   } else if (addr = calc_expr(second_arg), addr == 0) {
     printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
   } else {
     for (paddr_t i = 0; i < N; ++i) {
       word_t v = paddr_read(addr + i * 4, 4);
-      uint8_t *x = &v;
-      printf("0x%08u : " ANSI_FMT("0x02u\t0x02u\t0x02u\t0x02u\n", ANSI_FG_GREEN), x[0], x[1], x[2], x[3]);
+      uint8_t *x = (uint8_t *)&v;
+      printf("0x%08u : " ANSI_FMT("0x%02u\t0x%02u\t0x%02u\t0x%02u\n", ANSI_FG_GREEN), x[0], x[1], x[2], x[3]);
     }
   }
   return 0;
