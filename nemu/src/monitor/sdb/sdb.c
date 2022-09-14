@@ -42,11 +42,20 @@ static char* rl_gets() {
   return line_read;
 }
 
+static bool is_number(char *s) {
+  if (s == NULL) return false;
+  if (*s == '-') ++s;
+  if (!isdigit(*s)) return false;
+  while (*s)
+    if (!isdigit(*s++))
+      return false;
+  return true;
+}
+
 static int cmd_c(char *args) {
   cpu_exec(-1);
   return 0;
 }
-
 
 static int cmd_q(char *args) {
 
@@ -67,7 +76,7 @@ static int cmd_si(char *args) {
     uint64_t n = 0;
     if (other_args != NULL) {
       printf(ANSI_FMT("Expect exactly one integer.\n", ANSI_FG_RED));
-    } else if (*first_arg == '-' || sscanf(first_arg, "%lu", &n) == 0 || n == 0) {
+    } else if (*first_arg == '-' || !is_number(first_arg) || (sscanf(first_arg, "%lu", &n), n) == 0) {
       printf(ANSI_FMT("Expect a positive integer.\n", ANSI_FG_RED));
     } else {
       cpu_exec(n);
@@ -95,18 +104,34 @@ static int cmd_info(char *args) {
   return 0;
 }
 
+static paddr_t calc_expr(char* expr) {
+
+  paddr_t x = 0;
+  sscanf(expr, "%u", &x);
+  return x;
+
+}
+
 static int cmd_x(char *args) {
   char *first_arg = strtok(args, " ");
   char *second_arg = strtok(NULL, " ");
   char *other_orgs = strtok(NULL, " ");
 
-  paddr_t N = 0;
-
+  paddr_t N = 0, addr = 0;
 
   if (first_arg == NULL || second_arg == NULL || other_orgs != NULL) {
-    printf(ANSI_FMT("Expect an integer N and an expression EXPR\n", ANSI_FG_RED));
-  } else if (true) {
+    printf(ANSI_FMT("Expect an integer N and an expression EXPR.\n", ANSI_FG_RED));
+  } else if (!is_number(first_arg) || *first_arg == '-' || (sscanf(first_arg, "%u", &N), N == 0 || N > 1e5)) {
+    printf(ANSI_FMT("Expect an positive integer between 0 and 10000.\n"));
     return N;
+  } else if (addr = calc_expr(second_arg), addr == 0) {
+    printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
+  } else {
+    for (paddr_t i = 0; i < N; ++i) {
+      word_t v = paddr_read(addr + i * 4, 4);
+      uint8_t *x = &v;
+      printf("0x%08u : " ANSI_FMT("0x02u\t0x02u\t0x02u\t0x02u\n", ANSI_FG_GREEN), x[0], x[1], x[2], x[3]);
+    }
   }
   return 0;
 }
