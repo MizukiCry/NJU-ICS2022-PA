@@ -149,7 +149,7 @@ word_t str_to_num(char* s) {
 bool check_parentheses(int p, int q) {
   if (tokens[p].type != TK_L_BRA) return false;
   int t = 0;
-  for(int i = p; i <= q; ++i)
+  for (int i = p; i <= q; ++i)
   {
     if (tokens[i].type == TK_L_BRA) ++t;
     else if (tokens[i].type == TK_R_BRA) --t;
@@ -221,8 +221,9 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
   printf("Made token [%d]\n", nr_token);
-  for(int i = 0; i < nr_token; ++i) {
-    printf("-- %d\n", tokens[i].type);
+  for (int i = 0; i < nr_token; ++i) {
+    if (tokens[i].type != 256)
+      printf("-- %d\n", tokens[i].type);
   }
   *success = true;
   return eval(0, nr_token - 1, success);
