@@ -14,17 +14,18 @@
 ***************************************************************************************/
 
 #include <common.h>
-#include "sdb.h"
-
-
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 
+
+word_t expr(char *e, bool *success);
+
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
+
   FILE* f = fopen("tools/gen-expr/build/input", "r");
   assert(f != NULL);
   uint32_t x;
@@ -35,7 +36,6 @@ int main(int argc, char *argv[]) {
     assert(x_state);
     assert(x == res);
   }
-
   fclose(f);
   return 0;
 
