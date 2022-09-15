@@ -101,6 +101,7 @@ static bool make_token(char *e) {
 
     for (i = 0; i < NR_REGEX; i ++) {
       printf("-- Match %d\n", i);
+      printf("[%s]\n", e + position);
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         printf("-- Matches %d\n", i);
         char *substr_start = e + position;
