@@ -47,8 +47,7 @@ typedef enum _NUMBER_TYPE {
   NT_NAN,
   NT_NEGATIVE,
   NT_16,
-  NT_10,
-  NT_8
+  NT_10
 } NTYPE;
 
 static NTYPE strnum(char *s, uint32_t *x) {
@@ -61,13 +60,7 @@ static NTYPE strnum(char *s, uint32_t *x) {
     } else if ((*s + 1) == 'd' || *(s + 1) == 'D') {
       res = NT_10;
       s += 2;
-    } else if ((*s + 1) == 'o' || *(s + 1) == 'O') {
-      res = NT_8;
-      s += 2;
-    }/* else if (*(s + 1) == 'b' || *(s + 1) == 'B') {
-      res = NT_2;
-      s += 2;
-    }*/
+    }
   }
   if (*s == '-') {
     if (res != NT_10) return NT_NAN;
@@ -79,8 +72,6 @@ static NTYPE strnum(char *s, uint32_t *x) {
       return NT_NAN;
     else if(res == NT_16 && (!isdigit(*i) && !('a' <= *i && *i <= 'f') && !('A' <= *i && *i <= 'F')))
       return NT_NAN;
-    else if(res == NT_8 && !('0' <= *i && *i <= '7'))
-      return NT_NAN;
   switch (res)
   {
   case NT_16:
@@ -90,12 +81,6 @@ static NTYPE strnum(char *s, uint32_t *x) {
   case NT_NEGATIVE:
     sscanf(s, "%u", x);
     break;
-  case NT_8:
-    sscanf(s, "%o", x);
-    break;
-  /*case NT_2:
-    sscanf(s, "%b", &x);
-    break;*/
   default:
     return NT_NAN;
   }

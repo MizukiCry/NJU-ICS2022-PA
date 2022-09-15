@@ -22,14 +22,14 @@
 
 enum {
   TK_NOTYPE = 256,
-  TK_L_BRA,
-  TK_R_BRA,
+  TK_DEC_INT,
+  TK_EQ,
   TK_PLUS,
   TK_MINUS,
   TK_MUL,
   TK_DIV,
-  TK_DEC_INT,
-  TK_EQ,
+  TK_L_BRA,
+  TK_R_BRA,
 
   /* TODO: Add more token types */
 
@@ -81,7 +81,7 @@ typedef struct token {
   char str[32];
 } Token;
 
-static Token tokens[32] __attribute__((used)) = {};
+static Token tokens[1024] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 static bool make_token(char *e) {
@@ -93,7 +93,7 @@ static bool make_token(char *e) {
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
-    if (nr_token == 32) {
+    if (nr_token == sizeof(tokens) / sizeof(Token)) {
       printf(ANSI_FMT("Regex too long.\n", ANSI_FG_RED));
       return false;
     }
@@ -116,11 +116,12 @@ static bool make_token(char *e) {
         tokens[nr_token].type = rules[i].token_type;
         switch (rules[i].token_type) {
           case TK_DEC_INT:
-            if (substr_len > 32) {
+            if (substr_len >= sizeof(tokens[0].str) / sizeof(char)) {
               printf(ANSI_FMT("Regex integer too large.\n", ANSI_FG_RED));
               return false;
             }
             memcpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
             break;
           default:
         }
@@ -138,6 +139,77 @@ static bool make_token(char *e) {
   return true;
 }
 
+word_t str_to_num(char* s) {
+  word_t res = 0;
+
+  sscanf(s, "%u", &res);
+  return res;
+}
+
+bool check_parentheses(int p, int q) {
+  if (tokens[p].type != TK_L_BRA) return false;
+  int t = 0;
+  for(int i = p; i <= q; ++i)
+  {
+    if (tokens[i].type == TK_L_BRA) ++t;
+    else if (tokens[i].type == TK_R_BRA) --t;
+    if (t < 0) return false;
+    if (t == 0 && i != q) return false;
+  }
+  return t == 0;
+}
+
+word_t eval(int p, int q, bool *success) {
+  if (p > q) {
+    *success = false;
+    return 0;
+  }
+  if (p == q) {
+    if (tokens[p].type != TK_DEC_INT) {
+      *success = false;
+      return 0;
+    }
+    return str_to_num(tokens[p].str);
+  }
+  if (p + 1 == q && tokens[p].type == TK_MINUS && tokens[q].type == TK_DEC_INT) {
+    return -str_to_num(tokens[q].str);
+  }
+  if (check_parentheses(p, q)) {
+    return eval(p + 1, q - 1, success);
+  }
+  int lowest_level = 0, pos = 0, t = 0;
+  for (int i = p; i <= q; ++i) {
+    if (tokens[i].type == TK_L_BRA) ++t;
+    else if (tokens[i].type == TK_R_BRA) --t;
+    if (t || i == p) continue;
+    if (tokens[i].type > lowest_level) {
+      lowest_level = tokens[i].type;
+      pos = i;
+    }
+  }
+  if (lowest_level == 0) {
+    *success = false;
+    return 0;
+  }
+  word_t lhs = eval(p, pos - 1, success);
+  if (!*success) return 0;
+  word_t rhs = eval(pos + 1, q, success);
+  if (!*success) return 0;
+  switch (tokens[pos].type)
+  {
+  case TK_PLUS:
+    return lhs + rhs;
+  case TK_MINUS:
+    return lhs - rhs;
+  case TK_MUL:
+    return lhs * rhs;
+  case TK_DIV:
+    return lhs / rhs;
+  default:
+    *success = false;
+  }
+  return 0;
+}
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -145,8 +217,6 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  /* TODO: Insert codes to evaluate the expression. */
-  TODO();
-
-  return 0;
+  *success = true;
+  return eval(0, nr_token - 1, success);
 }
