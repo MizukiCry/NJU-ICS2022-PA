@@ -25,9 +25,12 @@ int main(int argc, char *argv[]) {
   FILE* f = fopen("tools/gen-expr/build/input", "r");
   assert(f != NULL);
   uint32_t x;
-  char expr[65536];
-  while (~fscanf(f, "%u%[^\n]", &x, expr)) {
-    printf("scanf %u\n", x);
+  bool x_state;
+  char _expr[65536];
+  while (~fscanf(f, "%u%[^\n]", &x, _expr)) {
+    uint32_t res = expr(_expr, &x_state);
+    assert(x_state);
+    assert(x == res);
   }
 
   fclose(f);
