@@ -160,12 +160,16 @@ bool check_parentheses(int p, int q) {
 }
 
 word_t eval(int p, int q, bool *success) {
+  printf("-- eval %d %d\n", p, q);
+  
   if (p > q) {
+    printf("-- eval false1 %d %d\n", p, q);
     *success = false;
     return 0;
   }
   if (p == q) {
     if (tokens[p].type != TK_DEC_INT) {
+      printf("-- eval false2 %d %d\n", p, q);
       *success = false;
       return 0;
     }
@@ -188,6 +192,7 @@ word_t eval(int p, int q, bool *success) {
     }
   }
   if (lowest_level == 0) {
+    printf("-- eval false3 %d %d\n", p, q);
     *success = false;
     return 0;
   }
@@ -205,11 +210,13 @@ word_t eval(int p, int q, bool *success) {
     return lhs * rhs;
   case TK_DIV:
     if (rhs == 0) {
+      printf("-- eval false4 %d %d\n", p, q);
       *success = false;
       return 0;
     }
     return lhs / rhs;
   default:
+    printf("-- eval false5 %d %d\n", p, q);
     *success = false;
   }
   return 0;
