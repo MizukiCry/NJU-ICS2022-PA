@@ -112,9 +112,9 @@ static bool make_token(char *e) {
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
-
-        tokens[nr_token].type = rules[i].token_type;
         switch (rules[i].token_type) {
+          case TK_NOTYPE:
+            continue;
           case TK_DEC_INT:
             if (substr_len >= sizeof(tokens[0].str) / sizeof(char)) {
               printf(ANSI_FMT("Regex integer too large.\n", ANSI_FG_RED));
@@ -125,7 +125,7 @@ static bool make_token(char *e) {
             break;
           default:
         }
-        ++nr_token;
+        tokens[nr_token++].type = rules[i].token_type;
         break;
       }
     }
@@ -229,8 +229,8 @@ word_t expr(char *e, bool *success) {
   }
   printf("Made token [%d]\n", nr_token);
   for (int i = 0; i < nr_token; ++i) {
-    if (tokens[i].type != 256)
-      printf("-- %d\n", tokens[i].type);
+    //if (tokens[i].type != 256)
+    printf("-- %d\n", tokens[i].type);
   }
   *success = true;
   return eval(0, nr_token - 1, success);
