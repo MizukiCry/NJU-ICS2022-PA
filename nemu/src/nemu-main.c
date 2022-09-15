@@ -22,7 +22,7 @@ int is_exit_status_bad();
 
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
-  FILE* f = fopen("../tools/gen-expr/build/input", "r");
+  FILE* f = fopen("tools/gen-expr/build/input", "r");
   assert(f != NULL);
   uint32_t x;
   char expr[65536];
