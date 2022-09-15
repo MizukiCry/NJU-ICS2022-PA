@@ -14,6 +14,12 @@
 ***************************************************************************************/
 
 #include <common.h>
+#include <isa.h>
+#include <cpu/cpu.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <memory/paddr.h>
+
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
