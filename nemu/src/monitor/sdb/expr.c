@@ -181,7 +181,7 @@ word_t eval(int p, int q, bool *success) {
   for (int i = p; i <= q; ++i) {
     if (tokens[i].type == TK_L_BRA) ++t;
     else if (tokens[i].type == TK_R_BRA) --t;
-    if (t || i == p) continue;
+    if (t != 0 || i == p) continue;
     if (tokens[i].type > lowest_level) {
       lowest_level = tokens[i].type;
       pos = i;
@@ -220,7 +220,6 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-
   *success = true;
   return eval(0, nr_token - 1, success);
 }
