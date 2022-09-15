@@ -204,6 +204,10 @@ word_t eval(int p, int q, bool *success) {
   case TK_MUL:
     return lhs * rhs;
   case TK_DIV:
+    if (rhs == 0) {
+      *success = false;
+      return 0;
+    }
     return lhs / rhs;
   default:
     *success = false;

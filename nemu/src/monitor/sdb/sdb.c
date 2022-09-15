@@ -43,7 +43,7 @@ static char* rl_gets() {
   return line_read;
 }
 
-typedef enum _NUMBER_TYPE {
+/*typedef enum _NUMBER_TYPE {
   NT_NAN,
   NT_NEGATIVE,
   NT_16,
@@ -85,7 +85,7 @@ static NTYPE strnum(char *s, uint32_t *x) {
     return NT_NAN;
   }
   return res;
-}
+}*/
 
 static int cmd_c(char *args) {
   cpu_exec(-1);
@@ -108,11 +108,11 @@ static int cmd_si(char *args) {
   } else {
     char *first_arg = strtok(args, " ");
     char *other_args = strtok(NULL, " ");
-    uint32_t n = 0;
-    NTYPE n_type = strnum(first_arg, &n);
+    bool b_status;
+    word_t n = expr(first_arg, &b_status);
     if (other_args != NULL) {
       printf(ANSI_FMT("Expect exactly one integer.\n", ANSI_FG_RED));
-    } else if (n_type == NT_NAN || n_type == NT_NEGATIVE || n == 0) {
+    } else if (!b_status || n == 0) {
       printf(ANSI_FMT("Expect a positive integer.\n", ANSI_FG_RED));
     } else {
       cpu_exec(n);
@@ -153,16 +153,15 @@ static int cmd_x(char *args) {
   char *second_arg = strtok(NULL, " ");
   char *other_orgs = strtok(NULL, " ");
 
-  bool expr_state = false;
-  paddr_t n = 0, addr = expr(second_arg, &expr_state);
-  NTYPE n_type = strnum(first_arg, &n);
+  bool n_state, addr_state;
+  paddr_t n = expr(first_arg, &n_state), addr = expr(second_arg, &addr_state);
 
   if (first_arg == NULL || second_arg == NULL || other_orgs != NULL) {
     printf(ANSI_FMT("Expect an integer N and an expression EXPR.\n", ANSI_FG_RED));
-  } else if (n_type == NT_NAN || n_type == NT_NEGATIVE || n == 0 || n > 1e3) {
+  } else if (!n_state || n == 0 || n > 1e3) {
     printf(ANSI_FMT("Expect an positive integer between 1 and 1000.\n", ANSI_FG_GREEN));
     return n;
-  } else if (!expr_state) {
+  } else if (!addr_state) {
     printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
   } else {
     for (paddr_t i = 0; i < n; ++i) {
