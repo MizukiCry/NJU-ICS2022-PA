@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
   bool x_state;
   char _expr[65536];
   while (~fscanf(f, "%u%[^\n]", &x, _expr)) {
+    printf("[%u][%s]\n", x, expr);
     printf("Start\n");
     uint32_t res = expr(_expr, &x_state);
     printf("End\n");
