@@ -24,8 +24,13 @@ word_t expr(char *e, bool *success);
 
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
+#ifdef CONFIG_TARGET_AM
+  am_init_monitor();
+#else
+  init_monitor(argc, argv);
+#endif
 
-  init_regex();
+  //init_regex();
   FILE* f = fopen("tools/gen-expr/build/input", "r");
   assert(f != NULL);
   uint32_t x;
@@ -38,12 +43,6 @@ int main(int argc, char *argv[]) {
   }
   fclose(f);
   return 0;
-
-#ifdef CONFIG_TARGET_AM
-  am_init_monitor();
-#else
-  init_monitor(argc, argv);
-#endif
 
   /* Start engine. */
   engine_start();
