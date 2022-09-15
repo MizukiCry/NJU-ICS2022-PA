@@ -45,13 +45,13 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},        // spaces
-  /*{"\\(", TK_L_BRA},        // left bracket
+  {"\\(", TK_L_BRA},        // left bracket
   {"\\)", TK_R_BRA},        // right bracket
   {"\\*", TK_MUL},          // multiply
   {"/", TK_DIV},            // divide
   {"\\+", TK_PLUS},         // plus
   {"\\-", TK_MINUS},        // minus
-  {"[0-9]+", TK_DEC_INT},   // decimal integer*/
+  {"[0-9]+", TK_DEC_INT},   // decimal integer
   {"==", TK_EQ},            // equal
 };
 
@@ -102,6 +102,7 @@ static bool make_token(char *e) {
     for (i = 0; i < NR_REGEX; i ++) {
       printf("-- Match %d\n", i);
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
+        printf("-- Matches %d\n", i);
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
