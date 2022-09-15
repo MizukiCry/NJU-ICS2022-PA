@@ -120,11 +120,11 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "Generating expr [%d/%d]\n", i + 1, loop);
     start_gen();
 
-    printf("[DEBUG]%s\n", buf_u);
+    //printf("[DEBUG]%s\n", buf_u);
 
     sprintf(code_buf, code_format, buf_u);
 
-    printf("[DEBUG]%s\n", code_buf);
+    //printf("[DEBUG]%s\n", code_buf);
 
     FILE *fp = fopen("/tmp/.code.c", "w");
     assert(fp != NULL);
