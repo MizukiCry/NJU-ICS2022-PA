@@ -37,6 +37,10 @@ static int choose(int x) {
   return rand() % x;
 }
 
+static void gen_str(char *s) {
+  while(*s) buf[pos++] = *s++;
+}
+
 static void gen_rand_space() {
   for (int i = choose(5); i >= 0; --i)
     buf[pos++] = ' ';
