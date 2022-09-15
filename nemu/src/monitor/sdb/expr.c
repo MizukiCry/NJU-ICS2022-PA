@@ -45,13 +45,13 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},        // spaces
-  {"\\(", TK_L_BRA},        // left bracket
+  /*{"\\(", TK_L_BRA},        // left bracket
   {"\\)", TK_R_BRA},        // right bracket
   {"\\*", TK_MUL},          // multiply
   {"/", TK_DIV},            // divide
   {"\\+", TK_PLUS},         // plus
   {"\\-", TK_MINUS},        // minus
-  {"[0-9]+", TK_DEC_INT},   // decimal integer
+  {"[0-9]+", TK_DEC_INT},   // decimal integer*/
   {"==", TK_EQ},            // equal
 };
 
