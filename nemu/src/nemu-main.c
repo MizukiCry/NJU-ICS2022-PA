@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
   uint32_t x;
   char expr[65536];
   while (~fscanf(f, "%u%[^\n]", &x, expr)) {
-
+    printf("scanf %u\n", x);
   }
 
   fclose(f);
