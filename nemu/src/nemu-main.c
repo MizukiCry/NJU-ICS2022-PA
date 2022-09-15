@@ -20,8 +20,20 @@ void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 
+char expr[65536];
+
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
+  FILE* f = fopen("../tools/gen-expr/build/input", "r");
+  assert(f != NULL);
+  uint32_t x;
+  while (~fscanf(f, "%u%[^\n]", &x, expr)) {
+
+  }
+
+  fclose(f);
+  return 0;
+
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
 #else
