@@ -25,16 +25,14 @@ word_t expr(char *e, bool *success);
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
 
+  init_regex();
   FILE* f = fopen("tools/gen-expr/build/input", "r");
   assert(f != NULL);
   uint32_t x;
   bool x_state;
   char _expr[65536];
   while (~fscanf(f, "%u%[^\n]", &x, _expr)) {
-    printf("[%u][%s]\n", x, _expr);
-    printf("Start\n");
     uint32_t res = expr(_expr, &x_state);
-    printf("End\n");
     assert(x_state);
     assert(x == res);
   }
