@@ -40,6 +40,7 @@ int main(int argc, char *argv[]) {
     uint32_t res = expr(_expr, &x_state);
     assert(x_state);
     assert(x == res);
+    return 0;
   }
   fclose(f);
   return 0;
