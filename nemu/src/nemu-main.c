@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
   while (~fscanf(f, "%u%[^\n]", &x, _expr)) {
     printf("Start\n");
     uint32_t res = expr(_expr, &x_state);
+    printf("End\n");
     assert(x_state);
     assert(x == res);
   }
