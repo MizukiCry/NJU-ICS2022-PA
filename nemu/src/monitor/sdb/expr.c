@@ -100,6 +100,7 @@ static bool make_token(char *e) {
     }
 
     for (i = 0; i < NR_REGEX; i ++) {
+      printf("-- Match %d\n", i);
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
@@ -129,6 +130,7 @@ static bool make_token(char *e) {
         ++nr_token;
         break;
       }
+      printf("-- Matched %d\n", i);
     }
 
     if (i == NR_REGEX) {
