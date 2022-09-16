@@ -106,6 +106,8 @@ static bool make_token(char *e) {
       return false;
     }
 
+    printf("--? [%d] [(%d)%c]", position, (int)e[position], e[position]);
+
     for (i = 0; i < NR_REGEX; i ++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
