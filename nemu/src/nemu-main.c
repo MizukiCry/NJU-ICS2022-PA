@@ -37,8 +37,8 @@ int main(int argc, char *argv[]) {
   bool x_state;
   char _expr[65536];
   while (~fscanf(f, "%u%[^\n]", &x, _expr)) {
-    printf("- [%d]\n", _expr[strlen(_expr) - 1]);
-    return 0;
+    //printf("- [%d]\n", _expr[strlen(_expr) - 1]);
+    //return 0;
     uint32_t res = expr(_expr, &x_state);
     printf("[%u] [%d] [%u]\n", x, x_state, res);
     assert(x_state);
