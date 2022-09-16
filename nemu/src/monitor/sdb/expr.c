@@ -22,37 +22,39 @@
 
 enum {
   TK_NOTYPE = 1,
-  
-  TK_EQ,
-  TK_PLUS,
-  TK_MINUS,
-  TK_MUL,
-  TK_DIV,
   TK_L_BRA,
   TK_R_BRA,
+  TK_MUL,
+  TK_DIV,
+  TK_PLUS,
+  TK_MINUS,
   TK_NUM,
-  //TK_DEC_INT,
-  //TK_HEX_INT,
-  /* TODO: Add more token types */
+  TK_EQ,
+  TK_NE,
+  TK_AND,
+  TK_DEREF,     // dereference
 };
 
 static struct rule {
   const char *regex;
   int token_type;
 } rules[] = {
-  /* TODO: Add more rules.
-   * Pay attention to the precedence level of different rules.
-   */
+  // Pay attention to the precedence level of different rules.
   {" +", TK_NOTYPE},                    // spaces
   {"\\(", TK_L_BRA},                    // left bracket
   {"\\)", TK_R_BRA},                    // right bracket
+
   {"\\*", TK_MUL},                      // multiply
   {"/", TK_DIV},                        // divide
   {"\\+", TK_PLUS},                     // plus
   {"-", TK_MINUS},                      // minus
-  {"0[xX][0-9a-fA-F]+", TK_NUM},    // hexadecimal integer
-  {"[0-9]+", TK_NUM},               // decimal integer
+
+  {"0[xX][0-9a-fA-F]+", TK_NUM},        // hexadecimal integer
+  {"[0-9]+", TK_NUM},                   // decimal integer
+
   {"==", TK_EQ},                        // equal
+  {"!=", TK_NE},                        // not equal
+  {"&&", TK_AND},                       // and
 };
 
 static int pre_lv_info[][3] = {
@@ -60,6 +62,7 @@ static int pre_lv_info[][3] = {
   {TK_L_BRA, TK_R_BRA},
   {TK_MUL, TK_DIV},
   {TK_PLUS, TK_MINUS},
+  {TK_EQ, TK_NE, TK_AND},
 }, pre_lv[64];
 
 #define NR_REGEX ARRLEN(rules)
