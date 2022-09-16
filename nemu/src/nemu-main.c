@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     //printf("[%u] [%d] [%u]\n", x, x_state, res);
     assert(x_state);
     assert(x == res);
-    printf("Success");
+    //printf("Success");
     //return 0;
   }
   fclose(f);
