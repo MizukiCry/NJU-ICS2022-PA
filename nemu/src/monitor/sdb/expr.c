@@ -269,11 +269,10 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-  /*printf("Made token [%d]\n", nr_token);
+  printf("Made token [%d]\n", nr_token);
   for (int i = 0; i < nr_token; ++i) {
-    //if (tokens[i].type != 256)
     printf("-- %d\n", tokens[i].type);
-  }*/
+  }
   *success = true;
   return eval(0, nr_token - 1, success);
 }
