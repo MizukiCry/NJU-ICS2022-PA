@@ -168,15 +168,15 @@ bool check_parentheses(int p, int q) {
 }
 
 word_t eval(int p, int q, bool *success) {
-  printf("-- eval %d %d\n", p, q);
+  //printf("-- eval %d %d\n", p, q);
   if (p > q) {
-    printf("-- eval false1 %d %d\n", p, q);
+    //printf("-- eval false1 %d %d\n", p, q);
     *success = false;
     return 0;
   }
   if (p == q) {
     if (tokens[p].type != TK_DEC_INT) {
-      printf("-- eval false2 %d %d\n", p, q);
+      //printf("-- eval false2 %d %d\n", p, q);
       *success = false;
       return 0;
     }
@@ -199,11 +199,11 @@ word_t eval(int p, int q, bool *success) {
     }
   }
   if (main_op == 0) {
-    printf("-- eval false3 %d %d\n", p, q);
+    //printf("-- eval false3 %d %d\n", p, q);
     *success = false;
     return 0;
   }
-  printf("---- %d %d\n", main_op, pos);
+  //printf("---- %d %d\n", main_op, pos);
   word_t lhs = eval(p, pos - 1, success);
   if (!*success) return 0;
   word_t rhs = eval(pos + 1, q, success);
@@ -218,13 +218,13 @@ word_t eval(int p, int q, bool *success) {
     return lhs * rhs;
   case TK_DIV:
     if (rhs == 0) {
-      printf("-- eval false4 %d %d\n", p, q);
+      //printf("-- eval false4 %d %d\n", p, q);
       *success = false;
       return 0;
     }
     return lhs / rhs;
   default:
-    printf("-- eval false5 %d %d\n", p, q);
+    //printf("-- eval false5 %d %d\n", p, q);
     *success = false;
   }
   return 0;
@@ -235,11 +235,11 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-  printf("Made token [%d]\n", nr_token);
+  /*printf("Made token [%d]\n", nr_token);
   for (int i = 0; i < nr_token; ++i) {
     //if (tokens[i].type != 256)
     printf("-- %d\n", tokens[i].type);
-  }
+  }*/
   *success = true;
   return eval(0, nr_token - 1, success);
 }
