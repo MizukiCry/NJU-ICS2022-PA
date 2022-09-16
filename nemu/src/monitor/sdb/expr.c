@@ -64,8 +64,8 @@ static struct rule {
 static int pre_lv_info[][3] = {
   {TK_NOTYPE},
   {TK_NUM, TK_REG},
-  {TK_NEG, TK_DEREF},
   {TK_L_BRA, TK_R_BRA},
+  {TK_NEG, TK_DEREF},
   {TK_MUL, TK_DIV},
   {TK_PLUS, TK_MINUS},
   {TK_EQ, TK_NE, TK_AND},
