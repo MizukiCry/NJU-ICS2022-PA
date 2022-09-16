@@ -22,6 +22,7 @@
 
 // this should be enough
 #define BUFLEN 65536
+#define TARLEN 5000   // smaller than 'BUFLEN'
 static char buf[BUFLEN] = {};
 static char buf_u[BUFLEN] = {};
 static char code_buf[BUFLEN + 128] = {}; // a little larger than `buf`
@@ -40,7 +41,7 @@ static int choose(int x) {
 }
 
 static void append_char(char c) {
-  if (pos_u > 60000) {
+  if (pos_u > TARLEN) {
     printf("[WARNING]Buffer overflow!\n");
     assert(0);
   }
@@ -66,7 +67,7 @@ static void gen_rand_num() {
 
 static void gen_rand_expr() {
   gen_rand_space();
-  if (pos_u > BUFLEN / 2) {
+  if (pos_u > TARLEN / 2) {
     gen_rand_num();
   } else {
     switch (choose(3))
