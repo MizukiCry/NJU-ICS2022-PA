@@ -85,9 +85,9 @@ static void gen_rand_expr() {
       {
       case '/':
         gen_rand_expr();
-        append_str("/(");
+        append_str("/((");
         gen_rand_expr();
-        append_str("*0+");
+        append_str(")*0+");
         gen_rand_num();
         append_char(')');
         break;
