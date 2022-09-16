@@ -40,10 +40,10 @@ int main(int argc, char *argv[]) {
     //printf("- [%d]\n", _expr[strlen(_expr) - 1]);
     //return 0;
     uint32_t res = expr(_expr, &x_state);
-    printf("[%u] [%d] [%u]\n", x, x_state, res);
+    //printf("[%u] [%d] [%u]\n", x, x_state, res);
     assert(x_state);
     assert(x == res);
-    printf("Success");
+    //printf("Success");
     return 0;
   }
   fclose(f);
