@@ -118,6 +118,14 @@ static int cmd_x(char *args) {
   return 0;
 }
 
+static int cmd_p(char* args) {
+  bool res_state;
+  word_t res = expr(args, &res_state);
+  if (!res_state) printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
+  else printf(ANSI_FMT("[%u]\n", ANSI_FG_GREEN), res);
+  return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -130,6 +138,7 @@ static struct {
   { "si", "(si [N]) Execute N(1 by default) instructions in single step and then pause it", cmd_si},
   { "info", "(info r/w) Print the status of the program", cmd_info },
   { "x", "(x N EXPR) Print N bytes since address EXPR as an expression", cmd_x },
+  { "p", "(p EXPR) Print the result of an expression", cmd_p },
   /* TODO: Add more commands */
 
 };
