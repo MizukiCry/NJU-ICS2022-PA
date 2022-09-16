@@ -22,7 +22,7 @@
 
 enum {
   TK_NOTYPE = 1,
-  TK_DEC_INT,
+  
   TK_EQ,
   TK_PLUS,
   TK_MINUS,
@@ -30,9 +30,10 @@ enum {
   TK_DIV,
   TK_L_BRA,
   TK_R_BRA,
-
+  TK_NUM,
+  //TK_DEC_INT,
+  //TK_HEX_INT,
   /* TODO: Add more token types */
-
 };
 
 static struct rule {
@@ -42,19 +43,20 @@ static struct rule {
   /* TODO: Add more rules.
    * Pay attention to the precedence level of different rules.
    */
-  {" +", TK_NOTYPE},        // spaces
-  {"\\(", TK_L_BRA},        // left bracket
-  {"\\)", TK_R_BRA},        // right bracket
-  {"\\*", TK_MUL},          // multiply
-  {"/", TK_DIV},            // divide
-  {"\\+", TK_PLUS},         // plus
-  {"-", TK_MINUS},        // minus
-  {"[0-9]+", TK_DEC_INT},   // decimal integer
-  {"==", TK_EQ},            // equal
+  {" +", TK_NOTYPE},                    // spaces
+  {"\\(", TK_L_BRA},                    // left bracket
+  {"\\)", TK_R_BRA},                    // right bracket
+  {"\\*", TK_MUL},                      // multiply
+  {"/", TK_DIV},                        // divide
+  {"\\+", TK_PLUS},                     // plus
+  {"-", TK_MINUS},                      // minus
+  {"0[xX][0-9a-fA-F]+", TK_NUM},    // hexadecimal integer
+  {"[0-9]+", TK_NUM},               // decimal integer
+  {"==", TK_EQ},                        // equal
 };
 
 static int pre_lv_info[][3] = {
-  {TK_DEC_INT},
+  {TK_NUM},
   {TK_L_BRA, TK_R_BRA},
   {TK_MUL, TK_DIV},
   {TK_PLUS, TK_MINUS},
@@ -126,7 +128,7 @@ static bool make_token(char *e) {
         if (rules[i].token_type == TK_NOTYPE) break;
 
         switch (rules[i].token_type) {
-          case TK_DEC_INT:
+          case TK_NUM:
             if (substr_len >= sizeof(tokens[0].str) / sizeof(char)) {
               printf(ANSI_FMT("Regex integer too large.\n", ANSI_FG_RED));
               return false;
@@ -152,8 +154,10 @@ static bool make_token(char *e) {
 
 word_t str_to_num(char* s) {
   word_t res = 0;
-
-  sscanf(s, "%u", &res);
+  if (*(s + 1) == 'x' || *(s + 1) == 'X')
+    sscanf(s, "%i", &res);
+  else
+    sscanf(s, "%u", &res);
   return res;
 }
 
@@ -178,14 +182,14 @@ word_t eval(int p, int q, bool *success) {
     return 0;
   }
   if (p == q) {
-    if (tokens[p].type != TK_DEC_INT) {
+    if (tokens[p].type != TK_NUM) {
       //printf("-- eval false2 %d %d\n", p, q);
       *success = false;
       return 0;
     }
     return str_to_num(tokens[p].str);
   }
-  if (p + 1 == q && tokens[p].type == TK_MINUS && tokens[q].type == TK_DEC_INT) {
+  if (p + 1 == q && tokens[p].type == TK_MINUS && tokens[q].type == TK_NUM) {
     return -str_to_num(tokens[q].str);
   }
   if (check_parentheses(p, q)) {
