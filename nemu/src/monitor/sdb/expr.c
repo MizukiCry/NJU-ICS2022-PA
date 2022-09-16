@@ -207,7 +207,7 @@ word_t eval(int p, int q, bool *success) {
   for (int i = p; i <= q; ++i) {
     if (tokens[i].type == TK_L_BRA) ++t;
     else if (tokens[i].type == TK_R_BRA) --t;
-    if (t != 0 || i == p) continue;
+    if (t != 0) continue;
     if (pre_lv[tokens[i].type] > pre_lv[main_op]
       || (pre_lv[tokens[i].type] == pre_lv[main_op] && pre_lv[tokens[i].type] != pre_lv[TK_NEG])
     ) {
