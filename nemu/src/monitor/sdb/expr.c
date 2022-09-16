@@ -203,11 +203,12 @@ word_t eval(int p, int q, bool *success) {
     *success = false;
     return 0;
   }
-  //printf("---- %d %d\n", main_op, pos);
+  printf("----(%d|%d) %d %d\n", p, q, main_op, pos);
   word_t lhs = eval(p, pos - 1, success);
   if (!*success) return 0;
   word_t rhs = eval(pos + 1, q, success);
   if (!*success) return 0;
+  printf("----(%d|%d) %u %u\n", p, q, lhs, rhs);
   switch (main_op)
   {
   case TK_PLUS:
