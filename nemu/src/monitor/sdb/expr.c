@@ -161,7 +161,6 @@ bool check_parentheses(int p, int q) {
 
 word_t eval(int p, int q, bool *success) {
   printf("-- eval %d %d\n", p, q);
-  
   if (p > q) {
     printf("-- eval false1 %d %d\n", p, q);
     *success = false;
@@ -196,11 +195,12 @@ word_t eval(int p, int q, bool *success) {
     *success = false;
     return 0;
   }
+  printf("---- %d %d\n", main_op, pos);
   word_t lhs = eval(p, pos - 1, success);
   if (!*success) return 0;
   word_t rhs = eval(pos + 1, q, success);
   if (!*success) return 0;
-  switch (tokens[pos].type)
+  switch (main_op)
   {
   case TK_PLUS:
     return lhs + rhs;
