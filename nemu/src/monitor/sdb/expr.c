@@ -215,6 +215,9 @@ word_t eval(int p, int q, bool *success) {
       pos = i;
     }
   }
+
+  printf("-- eval (%d | %d) %d %d\n", p, q, main_op, pos);
+
   if (main_op == 0) {
     *success = false;
     return 0;
