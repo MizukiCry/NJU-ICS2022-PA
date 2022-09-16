@@ -22,6 +22,20 @@ int is_exit_status_bad();
 
 word_t expr(char *e, bool *success);
 
+void test_expr() {
+  FILE* f = fopen("tools/gen-expr/build/input", "r");
+  assert(f != NULL);
+  uint32_t x;
+  bool x_state;
+  char _expr[65536];
+  while (~fscanf(f, "%u%[^\n]", &x, _expr)) {
+    uint32_t res = expr(_expr, &x_state);
+    assert(x_state);
+    assert(x == res);
+  }
+  fclose(f);
+}
+
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
@@ -29,26 +43,6 @@ int main(int argc, char *argv[]) {
 #else
   init_monitor(argc, argv);
 #endif
-
-  //return 0;
-  //init_regex();
-  FILE* f = fopen("tools/gen-expr/build/input", "r");
-  assert(f != NULL);
-  uint32_t x;
-  bool x_state;
-  char _expr[65536];
-  while (~fscanf(f, "%u%[^\n]", &x, _expr)) {
-    //printf("- [%d]\n", _expr[strlen(_expr) - 1]);
-    //return 0;
-    uint32_t res = expr(_expr, &x_state);
-    //printf("[%u] [%d] [%u]\n", x, x_state, res);
-    assert(x_state);
-    assert(x == res);
-    //printf("Success");
-    //return 0;
-  }
-  fclose(f);
-  return 0;
 
   /* Start engine. */
   engine_start();
