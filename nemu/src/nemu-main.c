@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
   char _expr[65536];
   while (~fscanf(f, "%u%[^\n]", &x, _expr)) {
     uint32_t res = expr(_expr, &x_state);
-    printf("[%u] [%d]\n", x, x_state);
+    printf("[%u] [%d] [%u]\n", x, x_state, res);
     assert(x_state);
     assert(x == res);
     printf("Success");
