@@ -19,6 +19,7 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
+#include <memory/paddr.h>
 
 enum {
   TK_NOTYPE = 1,
@@ -32,7 +33,9 @@ enum {
   TK_EQ,
   TK_NE,
   TK_AND,
+  TK_NEG,       // negative
   TK_DEREF,     // dereference
+  TK_REG,
 };
 
 static struct rule {
@@ -43,6 +46,7 @@ static struct rule {
   {" +", TK_NOTYPE},                    // spaces
   {"\\(", TK_L_BRA},                    // left bracket
   {"\\)", TK_R_BRA},                    // right bracket
+  {"\\$", TK_REG},                      // registry
 
   {"\\*", TK_MUL},                      // multiply
   {"/", TK_DIV},                        // divide
@@ -55,10 +59,13 @@ static struct rule {
   {"==", TK_EQ},                        // equal
   {"!=", TK_NE},                        // not equal
   {"&&", TK_AND},                       // and
+  {"\\$.{2,3}", TK_REG},
 };
 
 static int pre_lv_info[][3] = {
-  {TK_NUM},
+  {TK_NOTYPE},
+  {TK_NUM, TK_REG},
+  {TK_NEG, TK_DEREF},
   {TK_L_BRA, TK_R_BRA},
   {TK_MUL, TK_DIV},
   {TK_PLUS, TK_MINUS},
@@ -66,7 +73,6 @@ static int pre_lv_info[][3] = {
 }, pre_lv[64];
 
 #define NR_REGEX ARRLEN(rules)
-
 static regex_t re[NR_REGEX] = {};
 
 /* Rules are used for many times.
@@ -75,7 +81,7 @@ static regex_t re[NR_REGEX] = {};
 void init_regex() {
   for (int i = 0; i < sizeof(pre_lv_info) / sizeof(pre_lv_info[0]); ++i)
     for (int j = 0; j < sizeof(pre_lv_info[0]) / sizeof(int); ++j)
-      if (pre_lv_info[i][j] != 0) pre_lv[pre_lv_info[i][j]] = i + 1;
+      if (pre_lv_info[i][j] != 0) pre_lv[pre_lv_info[i][j]] = i;
       else break;
 
   char error_msg[128];
@@ -99,37 +105,26 @@ static int nr_token __attribute__((used))  = 0;
 
 static bool make_token(char *e) {
   int position = 0;
-  int i;
-  regmatch_t pmatch;
-
   nr_token = 0;
 
   while (e[position] != '\0') {
-    /* Try all rules one by one. */
     if (nr_token == sizeof(tokens) / sizeof(Token)) {
       printf(ANSI_FMT("Regex too long.\n", ANSI_FG_RED));
       return false;
     }
 
-    //printf("--? [%d] [(%d)%c]\n", position, (int)e[position], e[position]);
+    int i;
+    regmatch_t pmatch;
 
     for (i = 0; i < NR_REGEX; i ++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
-
         //Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
         //  i, rules[i].regex, position, substr_len, substr_len, substr_start);
-
         position += substr_len;
 
-        /* TODO: Now a new token is recognized with rules[i]. Add codes
-         * to record the token in the array `tokens'. For certain types
-         * of tokens, some extra actions should be performed.
-         */
-
         if (rules[i].token_type == TK_NOTYPE) break;
-
         switch (rules[i].token_type) {
           case TK_NUM:
             if (substr_len >= sizeof(tokens[0].str) / sizeof(char)) {
@@ -139,7 +134,14 @@ static bool make_token(char *e) {
             memcpy(tokens[nr_token].str, substr_start, substr_len);
             tokens[nr_token].str[substr_len] = '\0';
             break;
-          default:
+          case TK_REG:
+            if (substr_len >= sizeof(tokens[0].str) / sizeof(char)) {
+              printf(ANSI_FMT("Regex register name too long.\n", ANSI_FG_RED));
+              return false;
+            }
+            memcpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = '\0';
+            break;
         }
         tokens[nr_token++].type = rules[i].token_type;
         break;
@@ -149,6 +151,13 @@ static bool make_token(char *e) {
     if (i == NR_REGEX) {
       printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
       return false;
+    }
+  }
+
+  for (int i = 0; i < nr_token; ++i) {
+    if (i == 0 || (pre_lv[tokens[i - 1].type] == pre_lv[TK_NEG] || pre_lv[tokens[i - 1].type] == pre_lv[TK_EQ] )) {
+      if (tokens[i].type == TK_MINUS) tokens[i].type = TK_NEG;
+      else if (tokens[i].type == TK_MUL) tokens[i].type = TK_DEREF;
     }
   }
 
@@ -165,7 +174,7 @@ word_t str_to_num(char* s) {
 }
 
 bool check_parentheses(int p, int q) {
-  if (tokens[p].type != TK_L_BRA) return false;
+  if (p >= q || tokens[p].type != TK_L_BRA) return false;
   int t = 0;
   for (int i = p; i <= q; ++i)
   {
@@ -178,47 +187,58 @@ bool check_parentheses(int p, int q) {
 }
 
 word_t eval(int p, int q, bool *success) {
-  //printf("-- eval %d %d\n", p, q);
   if (p > q) {
-    //printf("-- eval false1 %d %d\n", p, q);
     *success = false;
     return 0;
   }
+
   if (p == q) {
-    if (tokens[p].type != TK_NUM) {
-      //printf("-- eval false2 %d %d\n", p, q);
-      *success = false;
-      return 0;
-    }
-    return str_to_num(tokens[p].str);
+
+    if (tokens[p].type == TK_NUM) return str_to_num(tokens[p].str);
+    if (tokens[p].type == TK_REG) return isa_reg_str2val(tokens[p].str, success);
+    *success = false;
+    return 0;
   }
-  if (p + 1 == q && tokens[p].type == TK_MINUS && tokens[q].type == TK_NUM) {
-    return -str_to_num(tokens[q].str);
-  }
+
   if (check_parentheses(p, q)) {
     return eval(p + 1, q - 1, success);
   }
-  int main_op = 0, pos = 0, t = 0;
+
+  int main_op = 0, pos = -1, t = 0;
   for (int i = p; i <= q; ++i) {
     if (tokens[i].type == TK_L_BRA) ++t;
     else if (tokens[i].type == TK_R_BRA) --t;
     if (t != 0 || i == p) continue;
-    if (pre_lv[tokens[i].type] >= pre_lv[main_op]) {
+    if (pre_lv[tokens[i].type] > pre_lv[main_op]
+      || (pre_lv[tokens[i].type] == pre_lv[main_op] && pre_lv[tokens[i].type] != pre_lv[TK_NEG])
+    ) {
       main_op = tokens[i].type;
       pos = i;
     }
   }
   if (main_op == 0) {
-    //printf("-- eval false3 %d %d\n", p, q);
     *success = false;
     return 0;
   }
-  //printf("----(%d|%d) %d %d\n", p, q, main_op, pos);
+
+  if (pre_lv[main_op] == pre_lv[TK_NEG]) {
+    if (pos != p) {
+      *success = false;
+      return 0;
+    }
+    switch (main_op)
+    {
+    case TK_NEG:
+      return -eval(p + 1, q, success);
+    case TK_DEREF:
+      return paddr_read(eval(p + 1, q, success), 4);
+    }
+  }
+
   word_t lhs = eval(p, pos - 1, success);
   if (!*success) return 0;
   word_t rhs = eval(pos + 1, q, success);
   if (!*success) return 0;
-  //printf("----(%d|%d) %u %u\n", p, q, lhs, rhs);
   switch (main_op)
   {
   case TK_PLUS:
@@ -229,13 +249,17 @@ word_t eval(int p, int q, bool *success) {
     return lhs * rhs;
   case TK_DIV:
     if (rhs == 0) {
-      //printf("-- eval false4 %d %d\n", p, q);
       *success = false;
       return 0;
     }
     return lhs / rhs;
+  case TK_EQ:
+    return lhs == rhs;
+  case TK_NE:
+    return lhs != rhs;
+  case TK_AND:
+    return lhs && rhs;
   default:
-    //printf("-- eval false5 %d %d\n", p, q);
     *success = false;
   }
   return 0;

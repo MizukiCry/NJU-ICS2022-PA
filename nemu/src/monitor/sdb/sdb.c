@@ -43,60 +43,13 @@ static char* rl_gets() {
   return line_read;
 }
 
-/*typedef enum _NUMBER_TYPE {
-  NT_NAN,
-  NT_NEGATIVE,
-  NT_16,
-  NT_10
-} NTYPE;
-
-static NTYPE strnum(char *s, uint32_t *x) {
-  if (s == NULL) return NT_NAN;
-  NTYPE res = NT_10;
-  if (*s == '0') {
-    if (*(s + 1) == 'x' || *(s + 1) == 'X') {
-      res = NT_16;
-      s += 2;
-    } else if ((*s + 1) == 'd' || *(s + 1) == 'D') {
-      res = NT_10;
-      s += 2;
-    }
-  }
-  if (*s == '-') {
-    if (res != NT_10) return NT_NAN;
-    res = NT_NEGATIVE;
-    s += 1;
-  }
-  for (char *i = s; *i; ++i)
-    if ((res == NT_10 || res == NT_NEGATIVE) && !isdigit(*i))
-      return NT_NAN;
-    else if(res == NT_16 && (!isdigit(*i) && !('a' <= *i && *i <= 'f') && !('A' <= *i && *i <= 'F')))
-      return NT_NAN;
-  switch (res)
-  {
-  case NT_16:
-    sscanf(s, "%x", x);
-    break;
-  case NT_10:
-  case NT_NEGATIVE:
-    sscanf(s, "%u", x);
-    break;
-  default:
-    return NT_NAN;
-  }
-  return res;
-}*/
-
 static int cmd_c(char *args) {
   cpu_exec(-1);
   return 0;
 }
 
 static int cmd_q(char *args) {
-
-  //Fix Error 1
   nemu_state.state = NEMU_QUIT;
-
   return -1;
 }
 
@@ -139,14 +92,6 @@ static int cmd_info(char *args) {
   }
   return 0;
 }
-
-/*static paddr_t calc_expr(char* expr) {
-  //To be improved
-  paddr_t x = 0;
-  //sscanf(expr, "%u", &x);
-  strnum(expr, &x);
-  return x;
-}*/
 
 static int cmd_x(char *args) {
   char *first_arg = strtok(args, " ");
