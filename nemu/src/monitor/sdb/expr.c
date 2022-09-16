@@ -181,17 +181,17 @@ word_t eval(int p, int q, bool *success) {
   if (check_parentheses(p, q)) {
     return eval(p + 1, q - 1, success);
   }
-  int lowest_level = 0, pos = 0, t = 0;
+  int main_op = 0, pos = 0, t = 0;
   for (int i = p; i <= q; ++i) {
     if (tokens[i].type == TK_L_BRA) ++t;
     else if (tokens[i].type == TK_R_BRA) --t;
     if (t != 0 || i == p) continue;
-    if (tokens[i].type > lowest_level) {
-      lowest_level = tokens[i].type;
+    if (tokens[i].type > main_op) {
+      main_op = tokens[i].type;
       pos = i;
     }
   }
-  if (lowest_level == 0) {
+  if (main_op == 0) {
     printf("-- eval false3 %d %d\n", p, q);
     *success = false;
     return 0;
