@@ -124,7 +124,7 @@ static bool make_token(char *e) {
          */
         switch (rules[i].token_type) {
           case TK_NOTYPE:
-            continue;
+            break;
           case TK_DEC_INT:
             if (substr_len >= sizeof(tokens[0].str) / sizeof(char)) {
               printf(ANSI_FMT("Regex integer too large.\n", ANSI_FG_RED));
@@ -132,10 +132,10 @@ static bool make_token(char *e) {
             }
             memcpy(tokens[nr_token].str, substr_start, substr_len);
             tokens[nr_token].str[substr_len] = '\0';
+            tokens[nr_token++].type = rules[i].token_type;
             break;
           default:
         }
-        tokens[nr_token++].type = rules[i].token_type;
         break;
       }
     }
