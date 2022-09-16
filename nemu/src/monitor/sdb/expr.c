@@ -48,7 +48,7 @@ static struct rule {
   {"\\*", TK_MUL},          // multiply
   {"/", TK_DIV},            // divide
   {"\\+", TK_PLUS},         // plus
-  {"\\-", TK_MINUS},        // minus
+  {"-", TK_MINUS},        // minus
   {"[0-9]+", TK_DEC_INT},   // decimal integer
   {"==", TK_EQ},            // equal
 };
