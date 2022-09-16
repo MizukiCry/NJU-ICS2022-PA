@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
     assert(x_state);
     assert(x == res);
     printf("Success");
+    return 0;
   }
   fclose(f);
   return 0;
