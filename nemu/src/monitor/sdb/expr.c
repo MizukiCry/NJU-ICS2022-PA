@@ -67,6 +67,9 @@ static struct rule {
   {"[0-9]+", TK_NUM},                   // decimal integer
   {"!", TK_NOT},
 
+  {"<<", TK_SAL},                       // shift arithmetic left
+  {">>", TK_SAR},                       // shift arithmetic right
+
   {"==", TK_EQ},                        // equal
   {"!=", TK_NE},                        // not equal
   {"<=", TK_LE},                        // less than or equal to
@@ -80,8 +83,7 @@ static struct rule {
   {"&", TK_BIT_AND},                    // bit and
   {"\\|", TK_BIT_OR},                   // bit or
   {"\\^", TK_BIT_XOR},                  // bit xor
-  {"<<", TK_SAL},                       // shift arithmetic left
-  {">>", TK_SAR},                       // shift arithmetic right
+  
 };
 
 static uint8_t pre_lv_info[][6] = {
