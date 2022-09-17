@@ -25,6 +25,16 @@ static int is_batch_mode = false;
 void init_regex();
 void init_wp_pool();
 
+struct watchpoint;
+
+typedef struct watchpoint {
+  int NO;
+  struct watchpoint *next;
+  word_t last;
+} WP;
+WP* new_wp();
+void free_wp(WP *wp);
+
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
   static char *line_read = NULL;
@@ -126,6 +136,26 @@ static int cmd_p(char* args) {
   return 0;
 }
 
+
+
+static int cmd_w(char* args) {
+  bool last_state;
+  word_t last = expr(args, &last_state);
+  if (!last_state) {
+    printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
+    return 0;
+  }
+  WP* wp = new_wp();
+  wp->last = last;
+
+  return 0;
+}
+
+static int cmd_d(char* args) {
+
+  return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -136,11 +166,11 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   { "si", "(si [N]) Execute N(1 by default) instructions in single step and then pause it", cmd_si},
-  { "info", "(info r/w) Print the status of the program", cmd_info },
+  { "info", "(info r/w) Print the status of registers/watchpoints", cmd_info },
   { "x", "(x N EXPR) Print N bytes since address EXPR as an expression", cmd_x },
   { "p", "(p EXPR) Print the result of an expression", cmd_p },
-  /* TODO: Add more commands */
-
+  { "w" ,"(w EXPR) Set a new watchpoint, when the value of w changed, pause the program", cmd_w },
+  { "d", "(d N) Delete the watchpoint with number N", cmd_d },
 };
 
 #define NR_CMD ARRLEN(cmd_table)
