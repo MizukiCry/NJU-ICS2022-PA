@@ -110,7 +110,7 @@ void init_regex() {
     {
       if (pre_lv_info[i][j] == 24) printf("() %d ()\n", i);
       if (pre_lv_info[i][j] != 0) pre_lv[pre_lv_info[i][j]] = i;
-      else break;
+      //else break;
     }
 
   char error_msg[128];
