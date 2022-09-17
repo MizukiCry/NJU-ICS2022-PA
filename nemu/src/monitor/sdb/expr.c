@@ -93,7 +93,7 @@ static uint8_t pre_lv_info[][6] = {
   {TK_PLUS, TK_MINUS},
   {TK_EQ, TK_NE, TK_LE, TK_GE, TK_LT, TK_GT},
   {TK_AND, TK_OR},
-  {TK_BIT_AND, TK_BIT_OR, TK_BIT_XOR},
+  {TK_BIT_AND, TK_BIT_OR, TK_BIT_XOR, TK_SAL, TK_SAR},
 }, pre_lv[64];
 
 #define NR_REGEX ARRLEN(rules)
