@@ -33,9 +33,20 @@ enum {
   TK_EQ,
   TK_NE,
   TK_AND,
+  TK_OR,
+  TK_NOT,
   TK_NEG,       // negative
   TK_DEREF,     // dereference
   TK_REG,
+  TK_LT,
+  TK_GT,
+  TK_LE,
+  TK_GE,
+  TK_BIT_AND,
+  TK_BIT_OR,
+  TK_BIT_XOR,
+  TK_SAL,       // shift arithmetic left
+  TK_SAR,       // shift arithmetic right
 };
 
 static struct rule {
@@ -54,21 +65,35 @@ static struct rule {
 
   {"0[xX][0-9a-fA-F]+", TK_NUM},        // hexadecimal integer
   {"[0-9]+", TK_NUM},                   // decimal integer
+  {"!", TK_NOT},
 
   {"==", TK_EQ},                        // equal
   {"!=", TK_NE},                        // not equal
+  {"<=", TK_LE},                        // less than or equal to
+  {">=", TK_GE},                        // greater than or equal to
+  {"<", TK_LT},                         // less than
+  {">", TK_GT},                         // greater than
   {"&&", TK_AND},                       // and
-  {"\\$.{2,3}", TK_REG},
+  {"\\|\\|", TK_OR},                    // or
+  {"\\$.{2,3}", TK_REG},                // register
+
+  {"&", TK_BIT_AND},                    // bit and
+  {"\\|", TK_BIT_OR},                   // bit or
+  {"\\^", TK_BIT_XOR},                  // bit xor
+  {"<<", TK_SAL},                       // shift arithmetic left
+  {">>", TK_SAR},                       // shift arithmetic right
 };
 
-static int pre_lv_info[][3] = {
+static uint8_t pre_lv_info[][6] = {
   {TK_NOTYPE},
   {TK_NUM, TK_REG},
   {TK_L_BRA, TK_R_BRA},
-  {TK_NEG, TK_DEREF},
+  {TK_NEG, TK_DEREF, TK_NOT},
   {TK_MUL, TK_DIV},
   {TK_PLUS, TK_MINUS},
-  {TK_EQ, TK_NE, TK_AND},
+  {TK_EQ, TK_NE, TK_LE, TK_GE, TK_LT, TK_GT},
+  {TK_AND, TK_OR},
+  {TK_BIT_AND, TK_BIT_OR, TK_BIT_XOR},
 }, pre_lv[64];
 
 #define NR_REGEX ARRLEN(rules)
@@ -192,7 +217,6 @@ word_t eval(int p, int q, bool *success) {
   }
 
   if (p == q) {
-
     if (tokens[p].type == TK_NUM) return str_to_num(tokens[p].str);
     if (tokens[p].type == TK_REG) return isa_reg_str2val(tokens[p].str, success);
     *success = false;
@@ -234,6 +258,8 @@ word_t eval(int p, int q, bool *success) {
       return -eval(p + 1, q, success);
     case TK_DEREF:
       return paddr_read(eval(p + 1, q, success), 4);
+    case TK_NOT:
+      return !eval(p + 1, q, success);
     }
   }
 
@@ -259,8 +285,28 @@ word_t eval(int p, int q, bool *success) {
     return lhs == rhs;
   case TK_NE:
     return lhs != rhs;
+  case TK_LE:
+    return lhs <= rhs;
+  case TK_GE:
+    return lhs >= rhs;
+  case TK_LT:
+    return lhs < rhs;
+  case TK_GT:
+    return lhs > rhs;
   case TK_AND:
     return lhs && rhs;
+  case TK_OR:
+    return lhs || rhs;
+  case TK_BIT_AND:
+    return lhs & rhs;
+  case TK_BIT_OR:
+    return lhs | rhs;
+  case TK_BIT_XOR:
+    return lhs ^ rhs;
+  case TK_SAL:
+    return lhs << rhs;
+  case TK_SAR:
+    return lhs >> rhs;
   default:
     *success = false;
   }
