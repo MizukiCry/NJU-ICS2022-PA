@@ -107,8 +107,11 @@ static regex_t re[NR_REGEX] = {};
 void init_regex() {
   for (int i = 0; i < sizeof(pre_lv_info) / sizeof(pre_lv_info[0]); ++i)
     for (int j = 0; j < sizeof(pre_lv_info[0]) / sizeof(int); ++j)
+    {
+      if (pre_lv_info[i][j] == 24) printf("() %d ()\n", i);
       if (pre_lv_info[i][j] != 0) pre_lv[pre_lv_info[i][j]] = i;
       else break;
+    }
 
   char error_msg[128];
 
