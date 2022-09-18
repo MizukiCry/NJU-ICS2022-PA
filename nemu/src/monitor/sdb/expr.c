@@ -239,7 +239,7 @@ word_t eval(int p, int q, bool *success) {
     if (tokens[i].type == TK_L_BRA) ++t;
     else if (tokens[i].type == TK_R_BRA) --t;
     if (t != 0) continue;
-    printf("-- comping %d: %d %d %d %d\n", i, main_op, tokens[i].type, pre_lv[main_op], pre_lv[tokens[i].type]);
+    //printf("-- comping %d: %d %d %d %d\n", i, main_op, tokens[i].type, pre_lv[main_op], pre_lv[tokens[i].type]);
     if (pre_lv[tokens[i].type] > pre_lv[main_op]
       || (pre_lv[tokens[i].type] == pre_lv[main_op] && pre_lv[tokens[i].type] != pre_lv[TK_NEG])
     ) {
