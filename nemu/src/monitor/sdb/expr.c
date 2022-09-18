@@ -166,11 +166,11 @@ static bool make_token(char *e) {
             tokens[nr_token].str[substr_len] = '\0';
             break;
           case TK_REG:
-            if (substr_len >= sizeof(tokens[0].str) / sizeof(char)) {
+            /*if (substr_len >= sizeof(tokens[0].str) / sizeof(char)) {
               printf(ANSI_FMT("Regex register name too long.\n", ANSI_FG_RED));
               return false;
-            }
-            memcpy(tokens[nr_token].str, substr_start, substr_len);
+            }*/
+            memcpy(tokens[nr_token].str, substr_start + 1, substr_len - 1);
             tokens[nr_token].str[substr_len] = '\0';
             break;
         }
