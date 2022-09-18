@@ -86,7 +86,7 @@ void print_wp_state() {
   for (int i = 0; i < wp_num; ++i)
   {
     int p = wp_use[i];
-    printf("%-5d | %-10d | %s\n", p, wp_pool[p].last, wp_pool[p].expr);
+    printf("%-5d | %-10u | %s\n", p, wp_pool[p].last, wp_pool[p].expr);
   }
 }
 
