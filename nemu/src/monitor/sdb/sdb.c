@@ -74,12 +74,14 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
-  if(strcmp(args, "r") == 0) {
+  if (args == NULL) {
+    printf(ANSI_FMT("Expect an argument.\n", ANSI_FG_RED));
+  } else if(strcmp(args, "r") == 0) {
     isa_reg_display();
   } else if(strcmp(args, "w") == 0) {
     print_wp_state();
   } else {
-    printf(ANSI_FMT("Wrong SUBCMD (expect \"r\" or \"w\").\n", ANSI_FG_RED));
+    printf(ANSI_FMT("Wrong argument(expect \"r\" or \"w\").\n", ANSI_FG_RED));
   }
   return 0;
 }
@@ -112,8 +114,11 @@ static int cmd_x(char *args) {
 static int cmd_p(char* args) {
   bool res_state;
   word_t res = expr(args, &res_state);
-  if (!res_state) printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
-  else printf(ANSI_FMT("[%u]\n", ANSI_FG_GREEN), res);
+  if (!res_state) {
+    printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
+  } else {
+    printf(ANSI_FMT("[%u]\n", ANSI_FG_GREEN), res);
+  }
   return 0;
 }
 
