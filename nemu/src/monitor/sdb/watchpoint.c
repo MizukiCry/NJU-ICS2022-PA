@@ -47,6 +47,7 @@ void new_wp(char* _expr) {
   int p = wp_use[wp_num++];
   wp_pool[p].last = expr_val;
   memcpy(wp_pool[p].expr, _expr, expr_len);
+  printf(ANSI_FMT("Set watchpoint [%d].\n", ANSI_FG_GREEN), p);
 }
 
 void free_wp(int NO) {

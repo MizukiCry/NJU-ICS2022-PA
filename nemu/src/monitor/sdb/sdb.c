@@ -62,14 +62,10 @@ static int cmd_si(char *args) {
   if (args == NULL) {
     cpu_exec(1);
   } else {
-    char *first_arg = strtok(args, " ");
-    char *other_args = strtok(NULL, " ");
-    bool b_status;
-    word_t n = expr(first_arg, &b_status);
-    if (other_args != NULL) {
-      printf(ANSI_FMT("Expect exactly one integer.\n", ANSI_FG_RED));
-    } else if (!b_status || n == 0) {
-      printf(ANSI_FMT("Expect a positive integer.\n", ANSI_FG_RED));
+    bool n_status;
+    word_t n = expr(args, &n_status);
+    if (!n_status) {
+      printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
     } else {
       cpu_exec(n);
     }
@@ -78,21 +74,12 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
-  if (args == NULL) {
-    printf(ANSI_FMT("Expect SUBCMD.\n", ANSI_FG_RED));
+  if(strcmp(args, "r") == 0) {
+    isa_reg_display();
+  } else if(strcmp(args, "w") == 0) {
+    print_wp_state();
   } else {
-    char *first_arg = strtok(args, " ");
-    char *other_args = strtok(NULL, " ");
-    if (other_args != NULL) {
-      printf(ANSI_FMT("Expect exactly one SUBCMD.\n", ANSI_FG_RED));
-    } else if(strcmp(first_arg, "r") == 0) {
-      isa_reg_display();
-    } else if(strcmp(first_arg, "w") == 0) {
-      print_wp_state();
-      printf(ANSI_FMT("To be implemented.\n", ANSI_FG_RED));
-    } else {
-      printf(ANSI_FMT("Unexpected SUBCMD (expect \"r\" or \"w\").\n", ANSI_FG_RED));
-    }
+    printf(ANSI_FMT("Wrong SUBCMD (expect \"r\" or \"w\").\n", ANSI_FG_RED));
   }
   return 0;
 }
@@ -151,7 +138,6 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-
   { "si", "(si [N]) Execute N(1 by default) instructions in single step and then pause it", cmd_si},
   { "info", "(info r/w) Print the status of registers/watchpoints", cmd_info },
   { "x", "(x N EXPR) Print N bytes since address EXPR as an expression", cmd_x },
