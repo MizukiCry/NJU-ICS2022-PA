@@ -18,36 +18,55 @@
 #define NR_WP 32
 
 typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
   word_t last;
-  /* TODO: Add more members if necessary */
+  char expr[50];
 } WP;
 
 static WP wp_pool[NR_WP] = {};
-static WP *head = NULL, *free_ = NULL;
+static int wp_use[NR_WP], wp_num;
 
-WP* new_wp() {
-  assert(free != NULL);
-  WP *res = free_;
-  free_ = free_->next;
-  return res;
+void new_wp(char* _expr) {
+  if (wp_num == NR_WP) {
+    printf(ANSI_FMT("The number of watchpoints reached the limit.\n", ANSI_FG_RED));
+    return;
+  }
+
+  int expr_len = strlen(_expr);
+  if (expr_len >= 50) {
+    printf(ANSI_FMT("Expression too long.\n", ANSI_FG_RED));
+    return;
+  }
+
+  bool expr_state;
+  word_t expr_val = expr(_expr, &expr_state);
+  if (!expr_state) {
+    printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
+    return;
+  }
+
+  int p = wp_use[wp_num++];
+  wp_pool[p].last = expr_val;
+  memcpy(wp_pool[p].expr, _expr, expr_len);
 }
 
-void free_wp(WP *wp) {
-  wp->next = free_;
-  free_ = wp;
+void free_wp(int NO) {
+  int i;
+  for (i = 0; i < wp_num; ++i)
+    if (wp_use[i] == NO) {
+      int t = wp_use[i];
+      wp_use[i] = wp_use[--wp_num];
+      wp_use[wp_num] = t;
+      printf(ANSI_FMT("Deleted watchpoint [%d]\n", ANSI_FG_GREEN), NO);
+      break;
+    }
+  if (i == wp_num) printf(ANSI_FMT("Can't find watchpoint [%d]\n", ANSI_FG_RED), NO);
 }
 
 void init_wp_pool() {
-  int i;
-  for (i = 0; i < NR_WP; i ++) {
-    wp_pool[i].NO = i;
-    wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
+  for (int i = 0; i < NR_WP; i ++) {
+    wp_use[i] = i;
   }
 
-  head = NULL;
-  free_ = wp_pool;
 }
 
 /* TODO: Implement the functionality of watchpoint */

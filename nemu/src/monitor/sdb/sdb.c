@@ -24,16 +24,8 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
-
-struct watchpoint;
-
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
-  word_t last;
-} WP;
-WP* new_wp();
-void free_wp(WP *wp);
+void new_wp(char*);
+void free_wp(int);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -136,23 +128,16 @@ static int cmd_p(char* args) {
   return 0;
 }
 
-
-
 static int cmd_w(char* args) {
-  bool last_state;
-  word_t last = expr(args, &last_state);
-  if (!last_state) {
-    printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
-    return 0;
-  }
-  WP* wp = new_wp();
-  wp->last = last;
-
+  new_wp(args);
   return 0;
 }
 
 static int cmd_d(char* args) {
-
+  bool n_state;
+  word_t n = expr(args, &n_state);
+  if (!n_state) printf(ANSI_FMT("Incorrect expression.\n", ANSI_FG_RED));
+  else free_wp(n);
   return 0;
 }
 
