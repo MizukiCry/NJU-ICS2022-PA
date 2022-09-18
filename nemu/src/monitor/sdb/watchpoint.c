@@ -62,11 +62,37 @@ void free_wp(int NO) {
   if (i == wp_num) printf(ANSI_FMT("Can't find watchpoint [%d]\n", ANSI_FG_RED), NO);
 }
 
+bool scan_wp() {
+  bool changed = false;
+  for (int i = 0; i < wp_num; ++i) {
+    int p = wp_use[i];
+    bool cur_state;
+    word_t cur_val = expr(wp_pool[p].expr, &cur_state);
+    assert(cur_state);
+    if (cur_val != wp_pool[p].last) {
+      printf(ANSI_FMT("Watchpoint [%d]: %s\n", ANSI_FG_YELLOW), p, wp_pool[p].expr);
+      printf("Old value = %u\n", wp_pool[p].last);
+      printf("New value = %u\n", cur_val);
+      wp_pool[p].last = cur_val;
+      changed = true;
+    }
+  }
+  return changed;
+}
+
+void print_wp_state() {
+  printf(ANSI_FMT("No.   | Current    | Expr\n", ANSI_FG_GREEN));
+  for (int i = 0; i < wp_num; ++i)
+  {
+    int p = wp_use[i];
+    printf("%-5d | %-10d | %s\n", p, wp_pool[p].last, wp_pool[p].expr);
+  }
+}
+
 void init_wp_pool() {
   for (int i = 0; i < NR_WP; i ++) {
     wp_use[i] = i;
   }
-
 }
 
 /* TODO: Implement the functionality of watchpoint */

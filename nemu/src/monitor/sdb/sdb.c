@@ -26,6 +26,7 @@ void init_regex();
 void init_wp_pool();
 void new_wp(char*);
 void free_wp(int);
+void print_wp_state();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -87,6 +88,7 @@ static int cmd_info(char *args) {
     } else if(strcmp(first_arg, "r") == 0) {
       isa_reg_display();
     } else if(strcmp(first_arg, "w") == 0) {
+      print_wp_state();
       printf(ANSI_FMT("To be implemented.\n", ANSI_FG_RED));
     } else {
       printf(ANSI_FMT("Unexpected SUBCMD (expect \"r\" or \"w\").\n", ANSI_FG_RED));
