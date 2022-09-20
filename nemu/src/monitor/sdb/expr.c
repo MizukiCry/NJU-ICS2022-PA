@@ -105,7 +105,6 @@ static regex_t re[NR_REGEX] = {};
  * Therefore we compile them only once before any usage.
  */
 void init_regex() {
-  //printf("-- init regex");
   for (int i = 0; i < sizeof(pre_lv_info) / sizeof(pre_lv_info[0]); ++i)
     for (int j = 0; j < sizeof(pre_lv_info[0]) / sizeof(uint8_t); ++j)
       if (pre_lv_info[i][j] != 0) pre_lv[pre_lv_info[i][j]] = i;
