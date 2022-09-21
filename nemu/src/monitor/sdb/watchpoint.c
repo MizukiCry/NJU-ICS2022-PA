@@ -95,6 +95,3 @@ void init_wp_pool() {
     wp_use[i] = i;
   }
 }
-
-/* TODO: Implement the functionality of watchpoint */
-
