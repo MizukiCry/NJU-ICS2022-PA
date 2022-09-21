@@ -27,6 +27,7 @@ void isa_reg_display() {
   for (int i = 0; i < 32; ++i) {
     printf(ANSI_FMT("[%-3s] = 0x%08x = %u\n", ANSI_FG_GREEN), regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
+  printf(ANSI_FMT("[pc ] = 0x%08x = %u\n", ANSI_FG_GREEN), cpu.pc, cpu.pc);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
